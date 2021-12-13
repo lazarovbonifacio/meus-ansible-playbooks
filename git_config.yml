@@ -1,0 +1,13 @@
+---
+- name: Configura meu git
+  hosts: localhost
+  connection: local
+
+  tasks:
+  - name: Configura 'username'
+    command: git config user.name "lazarovbonifacio"
+    
+  - name: Configura 'email'
+    command: git config user.email "lazarovbonifacio@outlook.com"
+...
+

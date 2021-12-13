@@ -1,0 +1,14 @@
+---
+- name: Coleta pipelines
+  hosts: localhost
+  connection: local
+  
+  tasks:
+
+    - name: Instalaçao via APT
+      command: curl -s -k --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}" "https://projetos.imd.ufrn.br/api/v4/projects/{{ item }}/repository/pipelines?per_page=100"
+      loop:
+        - 4146
+        - 4004
+        - 4302
+        - 4286

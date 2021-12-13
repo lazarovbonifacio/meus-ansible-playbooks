@@ -1,0 +1,146 @@
+---
+- name: Configura minha maquina
+  hosts: localhost
+  connection: local
+  
+  tasks:
+    - name: Instalação via APT
+      become: true
+      apt:
+        name: '{{ item }}'
+        install_recommends: yes
+        state: present
+      loop:
+          - vim
+          - htop
+          - curl
+          - wget
+          - tree
+          - apt-transport-https
+          - ca-certificates
+          - python3-pip
+          - make
+          - git
+          - flameshot
+          - tilix
+          - virtualbox
+
+    - block: 
+      - name: Instala chave do PPA do Anydesk
+        become: true
+        apt_key:
+          url: 'https://keys.anydesk.com/repos/DEB-GPG-KEY'
+          state: present
+      - name: Instala PPA Anydesk
+        apt_repository:
+          repo: deb http://deb.anydesk.com/ all main
+          state: present
+          filename: anydesk-stable
+      - name: Instala Anydesk
+        become: true
+        apt: 
+          name: anydesk
+
+    - block:
+      - name: Instala chave do PPA da MS
+        become: true
+        apt_key:
+          url: 'https://packages.microsoft.com/keys/microsoft.asc'
+          state: present
+      - name: Instala PPA do VSCode
+        become: true
+        apt_repository:
+          repo: 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main'
+          state: present
+          filename: vscode
+      - name: Instala o VSCode
+        become: true
+        apt:
+          name: code
+
+    - block: 
+      - name: Instala chave do PPA do Docker
+        become: true
+        apt_key:
+          url: 'https://download.docker.com/linux/ubuntu/gpg'
+          state: present
+      - name: Instala PPA do Docker
+        become: true
+        apt_repository:
+          repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+          state: present
+          filename: docker-ce
+      - name: Instala o Docker
+        become: true
+        apt:
+          name: docker-ce
+      - name: Adiciona usuário local ao grupo Docker
+        become: yes
+        user: 
+          name: '{{ ansible_user_id }}'
+          groups: docker 
+          append: yes
+      - name: Instala Docker-Compose
+        become: true
+        get_url:
+          url: 'https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64'
+          dest: '/usr/local/bin/docker-compose'
+          mode: 755
+      
+    - block:
+      - name: Baixa Discord
+        get_url: 
+          url: 'https://discord.com/api/download?platform=linux&format=deb'
+          dest: /tmp/discord.deb
+          mode: 755
+      - name: Instala discord
+        become: true
+        apt:
+          deb: /tmp/discord.deb
+
+    - block:
+      - name: Instala chave do PPA do Google
+        become: true
+        apt_key:
+          url: 'https://dl.google.com/linux/linux_signing_key.pub'
+          state: present
+      - name: Instala PPA do Chrome
+        become: true
+        apt_repository:
+          repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+          state: present
+          filename: google-chrome
+      - name: Instalação Google Chrome
+        become: true
+        apt: 
+          name: google-chrome-stable
+
+    - block:
+      - name: Instala chave do PPA do Kubernetes
+        become: true
+        apt_key:
+          url: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
+          state: present
+      - name: Instala PPA do Kubernetes
+        become: true
+        apt_repository:
+          repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+          state: present
+          filename: kubernetes
+      - name: Instalação kubectl
+        become: true
+        apt:
+          name: kubectl
+
+    - block:
+      - name: Baixa Steam
+        get_url: 
+          url: 'https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb'
+          dest: /tmp/steam.deb
+          mode: 755
+      - name: Instala Steam
+        become: true
+        apt:
+          deb: /tmp/steam.deb
+
+        
