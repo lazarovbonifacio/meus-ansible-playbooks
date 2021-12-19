@@ -6,8 +6,12 @@
   tasks:
   - name: Configura 'username'
     command: git config user.name "lazarovbonifacio"
+    args:
+      chdir: "{{dir}}"
     
   - name: Configura 'email'
     command: git config user.email "lazarovbonifacio@outlook.com"
+    args:
+      chdir: "{{dir}}"
 ...
 
